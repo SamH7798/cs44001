@@ -1,0 +1,96 @@
+// node class tempate used to contruct lists
+// Mikhail Nesterenko
+// 5/01/00
+
+//Samuel Hills version of Collection
+// 2/06/21
+
+#ifndef LIST_HPP_
+#define LIST_HPP_
+
+// the pointer part of every list is the same
+// lists differ by data part
+template <typename T>
+class node{
+public:
+
+        node() : next_(nullptr) {}
+
+  // functions can be inlined
+  T getData()const{return data_;}
+  void setData(const T& data){data_=data;}
+
+  // or can be defined outside
+  node<T>* getNext() const;
+  void setNext(node<T> *const);
+
+private:
+  T data_;
+  node<T> *next_;
+};
+
+template <typename T>
+class Collection{
+public:
+        Collection() : head_(nullptr) {}   // default constructor
+
+        void add( const T); // add function
+        void remove(const T);
+
+        template <typename U>
+        friend bool equal(const Collection<U>&, const Collection<U>&);  // friend equal function
+
+        T last() const;
+        void print();                                      // print
+private:
+        node<T>* head_;              // points that points the the beginning of the linked list
+//      node<T>* tail_;
+};
+
+// member functions for node ---------------------------
+//
+template <typename T>
+node<T>* node<T>::getNext()const{
+  return next_;
+}
+
+template<typename T>
+void node<T>::setNext(node<T> *const next){
+   next_=next;
+}
+//
+// member functios for Collection---------------
+template<typename T>
+void Collection<T>::add(T const x) {
+
+  node<T>* temp = new node<T>();    //  temp node to store next and new data
+        temp->setData(x);
+        temp->setNext(head_);             //setting next and data at the head of the list
+        head_ = temp;
+
+
+}
+
+
+template<typename T>
+void Collection<T>::remove(const T val) {
+  node<T>* current;                    //  delcaring 2 nodes to store desired positions in list
+  node<T>* previous;
+        current = head_;
+        while (head_->getData() == val) {
+          head_ = head_->getNext();                // makes the head the first pos where it does not equal val
+        }
+        while (current->getNext() != nullptr) {
+                if (current->getNext()->getData() == val) {
+                  previous = current->getNext();               // makes previous point to the pos where data equals val
+                  current->setNext(current->getNext()->getNext());       //sets current one past the pos where data equal val
+                  delete previous;                                 // deletes previous freeing memory and occurence in list
+
+                }
+                else {
+                  current = current->getNext();               // goes to next pos if val is not found
+
+                }
+        }
+
+}

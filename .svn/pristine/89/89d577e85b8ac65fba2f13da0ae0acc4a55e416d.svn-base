@@ -1,0 +1,139 @@
+// interface for abstract and concrete car factories
+// Mikhail Nesterenko
+// 7/16/2014
+
+#include <string>
+using std::cout; using std::endl; using std::vector;
+// abstract product
+class Car{
+ public:
+   std::string getMake() const {return make_;}
+   std::string getModel() const {return model_;}
+ protected:
+   std::string make_; // this car's make
+   std::string model_; // this car's model
+};
+
+// two concrete products
+class Ford : public Car{
+ public:
+   Ford();
+};
+
+class Toyota : public Car{
+ public:
+   Toyota();
+};
+
+// absract factory
+class CarFactory {
+public:
+   CarFactory(std::string location, int numCarsInProduction):
+      location_(location), 
+      numCarsInProduction_(numCarsInProduction){}
+
+   Car* requestCar();
+   int getNumCarsInProduction() const {return numCarsInProduction_;}
+   std::string getLocation() const {return location_;}
+   virtual ~CarFactory(){}
+protected:
+   virtual Car* makeCar() =0;
+
+private:
+   int numCarsInProduction_;
+   std::string location_;
+};
+
+// two concrete factories
+class FordFactory : public CarFactory {
+public:
+   FordFactory(std::string location="", int numCarsInProduction=0):
+       CarFactory(location, numCarsInProduction){}
+protected:
+   Car* makeCar() override;
+};
+
+class ToyotaFactory : public CarFactory {
+public:
+   ToyotaFactory (std::string location="", 
+		  int numCarsInProduction=0):
+       CarFactory(location, numCarsInProduction){}
+protected:
+   Car* makeCar() override;
+};
+
+//----------------Car Buyer Classes------------------------------------------------
+class CarLot{
+public:
+   CarLot();
+   Car *testDriveCar(){return car4sale_;}
+
+   // if a car is bought, requests a new one
+   Car *buyCar(){ 
+      Car *bought = car4sale_;
+      car4sale_ = 
+        factories_[rand()%factories_.size()]->requestCar();
+      return bought;
+   }
+		     
+private:
+   Car *car4sale_; // single car for sale at the lot
+   vector<CarFactory *> factories_;
+};
+
+
+CarLot::CarLot(){
+   // creates 2 Ford factories and 2 Toyota factories 
+   factories_.push_back(new FordFactory());   
+   factories_.push_back(new ToyotaFactory());
+   factories_.push_back(new FordFactory());
+   factories_.push_back(new ToyotaFactory());
+
+   // gets the first car for sale
+   car4sale_ = factories_[rand() % factories_.size()] -> requestCar();
+}
+
+
+
+CarLot *carLotPtr = nullptr; // global pointer instantiation
+
+// test-drives a car
+// buys it if Toyota
+void toyotaLover(int id){
+   if (carLotPtr == nullptr)
+      carLotPtr = new CarLot();
+
+   Car *toBuy = carLotPtr -> testDriveCar(); 
+
+   cout << "Buyer " << id << endl;
+   cout << "test driving " 
+	<< toBuy->getMake() << " "
+	<< toBuy->getModel();
+
+   if (toBuy->getMake() == "Toyota"){
+      cout << " love it! buying it!" << endl;
+      carLotPtr -> buyCar();
+   } else
+      cout << " did not like it!" << endl;
+}
+
+// test-drives a car
+// buys it if Ford
+void fordLover(int id){
+   if (carLotPtr == nullptr)
+      carLotPtr = new CarLot();
+
+   Car *toBuy = carLotPtr -> testDriveCar();
+   
+   cout << "Buyer " << id << endl;
+   cout << "test driving "
+	<< toBuy->getMake() << " "
+        << toBuy->getModel();
+   
+   if (toBuy->getMake() == "Ford"){
+      cout << " love it! buying it!" << endl;
+      carLotPtr -> buyCar();
+   } else
+      cout << " did not like it!" << endl;
+}
+

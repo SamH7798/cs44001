@@ -1,0 +1,42 @@
+#include"bridgeFigures.hpp"
+  int main() {
+int size;
+	char fill, diffFill, hollowBorder,enhancedBorder, enhancedFiller;
+	
+	cout << "Enter Size of Squares :";
+	cin >> size;
+	
+	cout << "Enter Border Character of Hollow Square: ";
+	cin >> hollowBorder;
+
+	Figure* hollowS = new Square(size, static_cast<Fill*>(new Hollow(hollowBorder)));
+	hollowS->draw();
+	cout << endl;
+	delete hollowS;
+
+	cout << "Enter Fill Character of Solid Square:";
+	cin >> fill;
+	Figure* fillS = new Square(size, static_cast<Fill*>(new Filled(fill)));
+	fillS->draw();
+	cout << endl;
+	
+	cout << "Enter Character To Change Fill: ";
+	cin >> diffFill;
+
+	fillS->changeFill(static_cast<Fill*>(new Filled(diffFill)));
+	fillS->draw();
+	delete fillS;
+	cout << endl;
+
+	cout << "Enter Border and Fill Character For Enhanced Fill: " << endl;
+	cout << "Enter Fill:";
+	cin >> enhancedFiller;
+	cout << "Enter Border:";
+	cin >> enhancedBorder;
+
+
+	Figure* enhancedS = new Square(size, static_cast<Fill*>(new EnhancedFill(enhancedFiller, enhancedBorder)));
+	enhancedS->draw();
+	delete enhancedS;
+
+}

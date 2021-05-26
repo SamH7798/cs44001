@@ -1,0 +1,50 @@
+#include"bridgeFigures.hpp"
+  int main() {
+	/*
+	Fill* hollowPaintY = new Hollow('^');
+	Fill* filledPaintStar = new Filled('*');
+
+
+	Figure *smallBox = new Square(5, filledPaintStar);
+	Figure *bigBox = new Square(10, hollowPaintY);
+
+	smallBox->draw();
+	cout << endl;
+	bigBox -> draw();
+	
+
+	// ask user for figure parameters
+	cout << "Enter fill character: ";
+	char fchar; cin >> fchar;
+	cout << "Filled or hollow? [f/h] ";
+	char ifFilled; cin >> ifFilled;
+	cout << "Enter size: "; int size; cin >> size;
+
+	Figure* userBox = new Square(size, ifFilled == 'f' ?
+		static_cast<Fill*>(new Filled(fchar)) :
+		static_cast<Fill*>(new Hollow(fchar))
+	);
+
+
+	
+	Figure *userBox = ifFilled == 'f'?
+	   new Square(size, new Filled(fchar)):
+	   new Square(size, new Hollow(fchar));
+	
+
+	userBox->draw();
+	cout << endl;
+	*/
+	int size = 5;
+	char fill = 'a';
+	char border = 'b';
+	Figure* fillS = new Square(size, static_cast<Fill*>(new Filled(fill)));
+	fillS->draw();
+	
+	Figure* hollowS = new Square(size, static_cast<Fill*>(new Hollow(fill)));
+	hollowS->draw();
+
+	Figure* enhancedS = new Square(size, static_cast<Fill*>(new EnhancedFill(fill, border)));
+	enhancedS->draw();
+
+}

@@ -1,0 +1,73 @@
+
+// demoes hashmap implementation
+// Mikhail Nesterenko
+// 4/15/2014
+
+#include "hashmap.hpp"
+#include <iostream>
+#include <string>
+
+using std::cin; using std::cout; using std::endl;
+using std::string;
+
+int main() {
+	hashmap<int, int> ;
+ 
+
+   
+ 
+	// inserting into myHash
+	myHash.insert(pair<int, int>(4, 40));
+	myHash.insert(pair<int, int>(10, 20));
+	 myHash.insert(pair<int, int>(20, 5));
+	 myHash[467] = 60;
+	 myHash[445]=90;
+	   
+	 auto result =myHash.insert(make_pair(6, 60));   // returning pair of iterator and bool
+	auto result2 = myHash.insert(make_pair(6, 61));
+
+	// testing insert on element that should be inserted
+	if (result.second) {
+	  cout << "inserted successfully"<< endl;
+	}
+	else{
+	  cout<<"not inserted"<<endl;
+	}
+
+	// testing insert on element that cant be inserted
+	if (result2.second) {
+		cout <<  "inserted successfully" << endl;
+	}
+	else {
+		cout << "not inserted" << endl;
+	}
+
+
+	auto result3 = myHash.erase(4);
+	// testing erase on element that should be erased
+        if(result.second){
+          cout<< "deleted successfully"<<endl;
+        }
+        else{
+          cout<<"not found";
+        }
+	
+	//testing on element that isnt found
+	auto result4 = myHash.erase(99);
+	if(result4.second){
+	  cout<<"deleted successfully"<<endl;
+	}
+	else{
+	  cout<<"not found"<<endl;
+	}
+	// rehashing the hash to size 8
+
+	cout << "Rehashing myHash" << endl;
+	myHash.rehash(8);
+
+
+	*/
+	
+}
+
+

@@ -1,0 +1,219 @@
+// Games, Template Method example
+// Mikhail Nesterenko
+// 2/4/2014
+
+#ifndef TDICE_H_
+#define TDICE_H_
+#include <ctime>
+#include <cstdlib>
+#include <iostream>
+
+using std::cout; using std::endl; using std::cin;
+
+// template for any game where players take 
+// turns to make moves
+// and there is a winner
+class Game {
+public:
+	Game() :playersCount_(0), movesCount_(0), playerWon_(noWinner) {}
+
+	// template method
+	void playGame(const int playersCount = 0) {
+		playersCount_ = playersCount;
+		movesCount_ = 0;
+
+		initializeGame();
+
+		for (int i = 0; !endOfGame(); i = (i + 1) % playersCount_) {
+			makeMove(i);
+			if (i == playersCount_ - 1)
+				++movesCount_;
+		}
+
+		printWinner();
+	}
+
+	virtual ~Game() {}
+
+protected:
+	// primitive operations
+	virtual void initializeGame() = 0;
+	virtual void makeMove(int player) = 0;
+	virtual void printWinner() = 0;
+	virtual bool endOfGame() { return playerWon_ != noWinner; } // this is a hook
+					// returns true if winner is decided
+	static const int noWinner = -1;
+
+	int playersCount_;
+	int movesCount_;
+	int playerWon_;
+};
+
+// Monopoly - a concrete game implementing primitive 
+// operations for the template method
+class Monopoly : public Game {
+public:
+	// implementing concrete methods
+	void initializeGame() {
+		playersCount_ = rand() % numPlayers_ + 1; // initialize players
+	}
+
+	void makeMove(int player) {
+		if (movesCount_ > minMoves_) {
+			const int chance = minMoves_ + rand() % (maxMoves_ - minMoves_);
+			if (chance < movesCount_) playerWon_ = player;
+		}
+	}
+
+	void printWinner() {
+		cout << "Monopoly, player " << playerWon_ << " won in "
+			<< movesCount_ << " moves." << endl;
+	}
+
+private:
+	static const int numPlayers_ = 8; // max number of players
+	static const int minMoves_ = 20; // nobody wins before minMoves_
+	static const int maxMoves_ = 200; // somebody wins before maxMoves_
+};
+
+// Chess - another game implementing
+// primitive operations
+class Chess : public Game {
+public:
+	void initializeGame() {
+		playersCount_ = numPlayers_; // initalize players
+		for (int i = 0; i < numPlayers_; ++i)
+			experience_[i] = rand() % maxExperience_ + 1;
+	}
+
+	void makeMove(int player) {
+		if (movesCount_ > minMoves_) {
+			const int chance = (rand() % maxMoves_) / experience_[player];
+			if (chance < movesCount_) playerWon_ = player;
+		}
+	}
+
+	void printWinner() {
+		cout << "Chess, player " << playerWon_
+			<< " with experience " << experience_[playerWon_]
+			<< " won in " << movesCount_ << " moves over"
+			<< " player with experience " << experience_[playerWon_ == 0 ? 1 : 0]
+			<< endl;
+	}
+
+private:
+	static const int numPlayers_ = 2;
+	static const int minMoves_ = 2; // nobody wins before minMoves_
+	static const int maxMoves_ = 100; // somebody wins before maxMoves_
+	static const int maxExperience_ = 3; // player's experience
+							   // the higher, the greater probability of winning
+	int experience_[numPlayers_];
+};
+class Dice : public Game {
+
+public:
+	void initializeGame() {
+		playersCount_ = numPlayers_;
+		
+	}
+	void makeMove(int player) {
+		
+		int playerScore;
+		char rORp;
+		int randPass;
+
+		if (movesCount_ < maxMoves_) {
+			for (int i = 0; i < 5; ++ i) {
+				roll_[i] = rand() % 6 + 1;
+			}
+				if (player == 0){
+					
+					
+
+					if (!comPass_) {
+						playerScore = roll_[0] + roll_[1] + roll_[2] + roll_[3] + roll_[4];
+						
+						if (playerScore > comMaxScore_) { comMaxScore_ = playerScore; }
+
+						cout << "Computer Rolled: " << roll_[0] << " " << roll_[1]
+							<< " " << roll_[2] << " " << roll_[3] << " " << roll_[4]
+							<< ", " << "Computers High Score = " << comMaxScore_ << endl;
+						randPass = rand() % 3 + 1;
+
+						if (randPass == 3) { 
+							comPass_ = true; 
+							
+						}
+					}
+					else {
+						cout << "Computer Rolled: Passed , Computer's High Score = " << comMaxScore_ << endl;
+					
+					}
+				}
+				
+
+				if(player == 1){
+					if (!playerPass_) {
+						playerScore = roll_[0] + roll_[1] + roll_[2] + roll_[3] + roll_[4];
+						if (playerScore > playerMaxScore_) { playerMaxScore_ = playerScore; }
+
+						cout << "You Rolled: " << roll_[0] << " " << roll_[1]
+							<< " " << roll_[2] << " " << roll_[3] << " " << roll_[4]
+							<< ", " << "Your High Score = " << playerMaxScore_ << endl;
+						if (movesCount_ != maxMoves_ - 1) {
+							cout << "Roll Again [y/n]: ";
+							cin >> rORp;
+
+							if (rORp == 'n') { playerPass_ = true; }
+
+						
+						}
+					}
+					else { cout << "You Rolled: Passed, Your High Score = " << playerMaxScore_ << endl; }
+				
+				}
+				
+		}
+	
+		if (comPass_ && playerPass_) {
+			cout << "Both Players Passsed, Computer Score:" << comMaxScore_ << " | Player Score: " << playerMaxScore_ << endl;
+		}
+	}
+	
+	 bool endOfGame() {
+		 if (movesCount_ >= 3) {
+			 return true;
+		 }
+		 else if (comPass_ && playerPass_) {
+			 
+			 return true;
+		 }
+		 else { return false; }
+		 
+		
+	 }
+	
+	void printWinner() {
+		if (comMaxScore_ > playerMaxScore_) {
+			cout << "You Lose" << endl;
+		}
+		else if (comMaxScore_ == playerMaxScore_ ) {
+			cout << "You Lose" << endl;
+		}
+	
+		else {
+			cout << "You Win" << endl;
+		}
+	}
+private:
+	int roll_[5] = {0,0,0,0,0};
+	int playerMaxScore_ = 0;
+	int comMaxScore_ = 0;
+	bool comPass_ = false;
+	bool playerPass_ = false;
+	static const int numPlayers_ = 2;
+	static const int minMoves_ = 1;
+	static const int maxMoves_ = 3;
+};
+
+#endif

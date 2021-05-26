@@ -1,0 +1,11 @@
+#include "wordcount.hpp"
+#include<array>
+
+int main() {
+	WordList a;
+       
+
+	a.addWord("hello");
+	a.print();
+
+}

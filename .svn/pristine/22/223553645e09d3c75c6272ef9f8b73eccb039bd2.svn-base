@@ -1,0 +1,55 @@
+
+// demoes hashmap implementation
+// Mikhail Nesterenko
+// 4/15/2014
+
+#include "hashmap.hpp"
+#include <iostream>
+#include <string>
+
+using std::cin; using std::cout; using std::endl;
+using std::string;
+
+int main() {
+	hashmap<int, int> myHash;
+	myHash.insert(pair<int, int>(4, 40));
+
+	
+	auto result =myHash.insert(make_pair(6, 60));
+	auto result2 = myHash.insert(make_pair(6, 61));
+
+	if (result.second) {
+		cout << "inserted successfully"<< endl;
+	}
+	if (result2.second) {
+		cout << "inserted successfully" << endl;
+	}
+	else {
+		cout << "not inserted" << endl;
+	}
+
+	    auto result3 = myHash.erase(4);
+        if(result.second){
+          cout<< "deleted successfully"<<endl;
+        }
+        else{
+          cout<<"not deleted";
+        }
+
+  hashmap<int, int> test;	
+        test[123] = 45;
+	test[12] = 56;
+	test[15] = 4;
+	test[7] = 13;
+       
+	
+	test.rehash(7);
+
+
+
+	//--------------------rehasing-----------
+
+	
+}
+
+

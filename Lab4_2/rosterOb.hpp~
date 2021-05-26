@@ -1,0 +1,120 @@
+// vector and list algorithms with objects in containers
+// Mikhail Nesterenko
+// 9/10/2018
+
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <list>
+#include <string>
+#include <cstdlib>
+
+using std::ifstream;
+using std::string; using std::getline;
+using std::list; using std::vector;
+using std::cout; using std::endl;
+using std::move;
+
+
+class Student {
+public:
+	Student(string firstName, string lastName, string courseName) {
+		firstName_ = firstName;
+		lastName_ = lastName;
+		pushCourseName(courseName);
+	//	cout << courseName_[0] << endl;
+		
+	}
+	
+	// move constructor, not really needed, generated automatically
+	/*Student(Student&& org) :
+		firstName_(move(org.firstName_)),
+		lastName_(move(org.lastName_))
+	{}*/
+
+	// force generation of default copy constructor
+	Student(const Student& org) = default;
+
+	string print() const { return firstName_ + ' ' + lastName_ ; }
+
+	// needed for unique() and for remove()
+	friend bool operator== (Student left, Student right) {
+		return left.lastName_ == right.lastName_ &&
+			left.firstName_ == right.firstName_;
+	}
+
+	// needed for sort()
+	friend bool operator< (Student left, Student right) {
+		return left.lastName_ < right.lastName_ ||
+			(left.lastName_ == right.lastName_ &&
+				left.firstName_ < right.firstName_);
+	}
+	string getFirst()const { return firstName_; } // returns first name
+	string getLast()const { return lastName_; } // returns last name
+	void pushCourseName(const string courseName) {
+		courseName_.push_back(courseName);
+		//cout << courseName_.size();
+	}
+	void printList()const {
+		//cout << ":"<<courseName_.size();
+		
+		for (auto str : courseName_) {
+			cout << str<< " ";
+		}
+		
+	}
+
+private:
+	string firstName_;
+	string lastName_;
+	list<string> courseName_;
+};
+void readRoster(list<Student>& roster, string fileName) {
+	ifstream course(fileName);
+	string first, last;
+	string coursefile = fileName;
+	int pos = coursefile.find_first_of('.');
+	string courseName = coursefile.erase(pos);
+	
+	while (course >> first >> last) {
+		//roster.push_back(Student(first, last, courseName));
+	
+		bool found = false;
+		
+			//cout <<":"<< it->getFirst() << " " << it->getLast() << ":" 
+				//<<"==" << first<< " " << last << endl;
+			for (auto& student : roster) {
+				if (student.getFirst() == first && student.getLast() == last) {
+
+					found = true;
+					student.pushCourseName(courseName);
+					break;
+
+				}
+			}
+		
+
+		if (!found) {
+			
+		
+				roster.push_back(Student(first, last, courseName));
+				
+			
+		}
+	
+	}
+	
+	course.close();
+}
+
+// printing a list out
+void printRoster(const list<Student>& roster) {
+	
+		for (const auto& student : roster) {
+			cout << student.print() << ": ";
+			student.printList();
+			cout << endl;
+			
+		}
+//	cout << endl;
+}

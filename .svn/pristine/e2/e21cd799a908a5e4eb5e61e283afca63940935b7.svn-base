@@ -1,0 +1,95 @@
+#include"wordcount.hpp"
+
+
+//----- word occurence deffinitions-----
+bool WordOccurrence::matchWord(const string& rhs) {
+	if (rhs == word_) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void WordOccurrence::increment() {
+
+	++num_;
+
+}
+
+string WordOccurrence::getWord() const {
+	return word_;
+}
+
+int WordOccurrence::getNum() const {
+	return num_;
+};
+
+//---------- word list deffinitions---------
+WordList::WordList(const WordList& rhs) {
+	size_ = rhs.size_;
+	wordArray_ = new WordOccurrence[size_];
+
+	for (int i = 0; i < size_; ++i) {
+	
+		wordArray_[i] = rhs.wordArray_[i];
+	}
+}
+
+WordList::~WordList() {            // destructor
+	delete[] wordArray_;
+}
+
+WordList::WordList() {
+	size_ = 0;
+	wordArray_ = new WordOccurrence[size_];
+}
+WordList& WordList::operator=(const WordList& rhs) {  //overloaded assignment
+	if (this != &rhs) {
+		size_ = rhs.size_;
+		delete[] wordArray_;
+			wordArray_ = new WordOccurrence[size_];
+			for (int i = 0; i < size_; ++i) {
+
+				wordArray_[i] = rhs.wordArray_[i];
+			}
+
+		
+		
+	}
+	return *this;
+
+}
+
+void WordList::addWord(const string& word) {
+
+	WordOccurrence* temp =   new WordOccurrence[size_+1];
+	for (int i = 0; i < size_; ++i) {
+		temp[i] = wordArray_[i];
+	}
+	temp[size_] = word;
+
+	delete[] wordArray_;
+	wordArray_ = temp;
+	++size_;
+	
+	}
+
+bool equal(const WordList& rhs, const WordList& lhs) {
+	if (rhs.wordArray_ == lhs.wordArray_ && rhs.size_ == lhs.size_) {
+
+		return true;
+	}
+	else {
+
+		return false;
+	}
+}
+
+void WordList::print() {
+	for (int i = 0; i < size_; ++i) {
+		
+		cout << wordArray_[i].getWord() << endl;
+	}
+}
+

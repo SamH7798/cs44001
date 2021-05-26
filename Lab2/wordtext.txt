@@ -1,0 +1,8 @@
+hello world, my name is sam!
+my school is in kent, kent is in ohio.
+sweet! my program works
+goodbye world!
+
+
+
+

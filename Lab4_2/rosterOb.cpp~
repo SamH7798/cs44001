@@ -1,0 +1,73 @@
+// reading a list from a fileName
+#include "rosterOb.hpp"
+//void readRoster(list<Student>& roster, string fileName);
+// printing a list out
+//void printRoster(const list<Student>& roster);
+int main(int argc, char* argv[]) {
+
+	if (argc <= 1) {
+		cout << "usage: " << argv[0]
+			<< " list of courses, dropouts last" << endl; exit(1);
+	}
+
+	// vector of courses of students
+	list<Student> courseStudents;
+
+	for (int i = 1; i < argc - 1; ++i) {
+		list<Student> roster;
+		readRoster(courseStudents, argv[i]);
+		//cout << "\n\n" << argv[i] << "\n";
+		
+		//courseStudents.push_back(move(roster));
+	}
+	printRoster(courseStudents);
+
+	list<Student> dropouts;
+	readRoster(dropouts, argv[argc - 1]);
+	cout << "-----Dropouts------" << endl << endl;
+	printRoster(dropouts);
+	
+	//int index = courseStudents.size() - 1;
+
+
+	
+	for (auto id = dropouts.begin(); id != dropouts.end(); ++id){
+		
+		for (auto it = courseStudents.begin(); it != courseStudents.end(); ++it) {
+			if (it->getFirst() == id->getFirst() && id->getLast() == it->getLast()) {
+				//cout <<endl <<  it->getFirst() << " " << it->getLast() << endl;
+				courseStudents.erase(it);
+				
+			}
+		
+		
+		}
+	
+	}
+	
+	printRoster(courseStudents);
+	/*
+	// reading in dropouts
+	list<Student> dropouts;
+	readRoster(dropouts, argv[argc - 1]);
+	cout << "\n\n dropouts \n"; printRoster(dropouts);
+
+	list<Student> allStudents;  // master list of students
+
+	for (auto& lst : courseStudents)
+		allStudents.splice(allStudents.end(), lst);
+
+	cout << "\n\n all students unsorted \n";
+	printRoster(allStudents);
+
+	allStudents.sort(); // sorting master list
+	cout << "\n\n all students sorted \n"; printRoster(allStudents);
+
+	allStudents.unique(); // eliminating duplicates
+	cout << "\n\n all students, duplicates removed \n"; printRoster(allStudents);
+
+	for (const auto& str : dropouts)  // removing individual dropouts
+		allStudents.remove(str);
+	cout << "\n\n all students, dropouts removed \n"; printRoster(allStudents);
+	*/
+}

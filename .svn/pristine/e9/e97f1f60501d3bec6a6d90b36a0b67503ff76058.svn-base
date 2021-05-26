@@ -1,0 +1,11 @@
+
+#include"logger.hpp"
+
+int main() {
+	Logger::instance().report("test1");
+	Logger::instance().report("test2");
+	Logger::instance().report("Hello");
+	 Logger::instance().report("World");
+
+
+}

@@ -1,0 +1,98 @@
+#include"CoffeeShack.hpp"
+int main() {
+	srand(time(NULL));
+
+	char size;
+	//Drink d;
+	char topping = ' ';
+	string name, order;
+	double price = 0.0;
+	
+	deque<ConcreteCustomer> customers;
+	vector<string>orders;
+
+	//ConcreteBarista b;
+	ConcreteBarista* b = new JuniorBarista(new SeniorBarista(new Manager));
+	
+
+
+	
+	int randTop, serveDec, index = 0;
+
+	ConcreteCustomer c1(" ", b, nullptr), c2(" ", b, nullptr), c3(" ", b, nullptr);
+	customers.push_back(c1); customers.push_back(c2); customers.push_back(c3);
+
+	while (!customers.empty()) {
+		 serveDec = rand() % 2 + 1;
+		Drink* d = new Drink;
+		
+		if (serveDec == 2 &&  !customers.empty() && index < customers.size()) {
+			cout << "Welcome to Coffee Shack, can I get you [l]arge, [m]edium, or [s]mall coffee?: ";
+			cin >> size;
+			d->setSize(size);
+			
+			order = d->getOrderName();
+			price = d->getPrice();
+			do {
+
+				cout << "Would you like to add [s]prinkles, [c]aramel, milk [f]oam, [i]ce or [n]ot?";
+				cin >> topping;
+				randTop = rand() % 5 + 1;
+				/*
+				switch (randTop) {
+					case 1: topping = 's'; break;
+					case 2: topping = 'c'; break;
+					case 3: topping = 'f'; break;
+					case 4: topping = 'i'; break;
+					case 5: topping = 'n'; break;
+				}
+				*/
+				if (topping == 's') { Sprinkles s(d); order += s.getName(); price += s.getPrice(); }// cout << 's' << endl; }
+				if (topping == 'c') { Caramel c(d);  order += c.getName(); price += c.getPrice(); }//cout << 'c' << endl;
+
+				if (topping == 'f') { Foam f(d); order += f.getName(); price += f.getPrice(); }//cout << 'f' << endl;
+
+				if (topping == 'i') { Ice i(d); order += i.getName(); price += i.getPrice(); }// cout << 'i' << endl;
+
+
+			} while (topping != 'n');
+			//cout << order<< "---" << endl;
+			d->setDrinkName(order);
+			d->setPrice(price);
+			
+			cout << "drink :" << d->getOrderName() << endl;
+			cout << "Can I get your name?" << endl;
+			cin >> name;
+			
+			customers[index].setName(name);							//s.setName(name);
+			 
+			b->registerCustomer(&customers[index]);
+			
+
+			customers[index].setDrink(d);																//s.setDrink(d);
+			orders.push_back(order);;
+			//delete d;
+			order = "";
+			++index;
+		}
+		else {
+			int point = 0;
+			for (auto o : orders) {
+				b->handleRequest(o);
+				b->drinkMade(o);
+				b->deregisterCustomer(&customers[point]);
+				
+				customers.pop_front();
+			}
+		
+			point = 0;
+			index = 0;
+			orders.clear();
+		}
+		
+		
+		
+	}
+
+	delete b;
+}

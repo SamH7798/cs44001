@@ -1,0 +1,129 @@
+#include <string>
+#include<iostream>
+
+using std::cout; using std::cin; using std::endl; using std::string;
+
+enum class DrinkType { small, medium, large };
+
+class Drink {
+public:
+    Drink(DrinkType type = DrinkType::small, int price = 0) :
+        type_(type), price_(price) {}
+    virtual double getPrice() const { return price_; };
+    virtual std::string getName() const { return  size_ + " coffee"; }
+    void addTop() { ++numTops; }
+    int Tops() { return numTops; }
+   
+    void setSize(char s) {
+        if (s == 's') { type_ = DrinkType::small; size_ = "small"; price_ = 1.00; }
+        if (s == 'm') { type_ = DrinkType::medium; size_ = "medium"; price_ = 2.00; }
+        if (s == 'l') { type_ = DrinkType::large; size_ = "large"; price_ = 3.00; }
+    }
+
+ 
+    string getSize() { return size_; }
+private:
+    double price_;
+    DrinkType type_;
+    string size_;
+  
+    int numTops = 0;
+};
+
+class Sprinkles : public Drink {
+public:
+    Sprinkles(Drink* d) : drink_(d) {}
+
+    double getPrice() const override { return  0.5; }
+    string getName() const override {  
+        if (0 < drink_->Tops() ) {
+            drink_->addTop();
+            return  ", sprinkles";
+        
+        }
+        else {
+            drink_->addTop();
+            return drink_->getName() + " with sprinkles";
+            
+        }
+       
+    }
+
+private:
+    Drink* drink_;
+
+};
+
+class Caramel : public Drink {
+public:
+
+    Caramel(Drink* d) : drink_(d){}
+
+    double getPrice() const override { return  0.20; }
+
+    string getName() const override {
+        if (0 < drink_->Tops()) {
+            drink_->addTop();
+            return  ", carmel";
+
+        }
+        else {
+            drink_->addTop();
+            return drink_->getName() + " with carmel";
+
+        }
+
+    }
+
+private:
+    Drink* drink_;
+
+};
+
+class Foam : public Drink {
+public:
+    Foam(Drink* d) : drink_(d) {}
+
+    double getPrice() const override { return  0.40; }
+
+    string getName() const override {
+        if (0 < drink_->Tops()) {
+            drink_->addTop();
+            return  ", foam ";
+
+        }
+        else {
+            drink_->addTop();
+            return drink_->getName() + " with foam" ;
+
+        }
+
+    }
+
+private:
+    Drink* drink_;
+
+};
+class Ice : public Drink {
+public:
+    Ice(Drink* d) : drink_(d) {}
+    double getPrice() const override { return  0.10; }
+
+    string getName() const override {
+        if (0 < drink_->Tops()) {
+            drink_->addTop();
+            return ", ice";
+
+        }
+        else {
+            drink_->addTop();
+            return drink_->getName() + " with ice";
+
+        }
+
+    }
+
+private:
+    Drink* drink_;
+
+};

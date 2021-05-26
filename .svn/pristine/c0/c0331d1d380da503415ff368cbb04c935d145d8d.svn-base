@@ -1,0 +1,40 @@
+#ifndef LOGGER_HPP_
+#define LOGGER_HPP_
+
+#include <vector>
+#include <iostream>
+#include<fstream>
+
+using std::cout; using std::endl;
+using std::vector; using std::string;
+
+
+class Logger {
+public:
+	static Logger* instance() {
+		static Logger lgr;
+		return &lgr;
+	}
+	
+	void report(const string& appended) {
+		if (!fout.eof()) {
+			fout << appended << endl;
+		}
+	}
+	
+	~Logger() { fout.close(); }
+
+private:
+	std::ofstream fout;
+	Logger() {
+		fout.open("logger.txt", std::fstream::out | std::fstream::app);
+	}
+	Logger(const Logger&) {}
+	Logger& operator=(const Logger&) {}
+	
+};
+
+
+
+
+#endif

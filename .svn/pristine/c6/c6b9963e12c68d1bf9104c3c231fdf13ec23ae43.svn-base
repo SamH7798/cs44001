@@ -1,0 +1,10 @@
+
+#include"logger.hpp"
+
+int main() {
+	Logger::instance()->report("test1");
+	Logger::instance()->report("test2");
+	
+
+
+}

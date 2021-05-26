@@ -1,0 +1,50 @@
+#include "rosterMap.hpp"
+
+int main(int argc, char* argv[]) {
+
+  
+	if (argc <= 1) {
+		cout << "usage: " << argv[0]
+			<< " list of courses, dropouts last" << endl; exit(1);
+	}
+
+	// map of courses of students
+	map<Student, list<string>>  courseStudents;
+	
+	for (int i = 1; i < argc - 1; ++i) {
+	
+		readRoster(courseStudents, argv[i]);
+		//cout << "\n\n" << argv[i] << "\n";
+		//printRoster(courseStudents);
+		//courseStudents.push_back(move(roster));
+		
+	}
+	
+	
+	printRoster(courseStudents);
+
+	map<Student, list<string>> dropouts;
+	readRoster(dropouts, argv[argc - 1]);
+	cout << endl<< endl;
+	cout << "-----dropouts------" << endl;
+
+	printRoster(dropouts);
+
+	for (auto id = dropouts.begin(); id != dropouts.end(); ++id) {
+		for (auto it = courseStudents.begin(); it != courseStudents.end();) {
+			if (id->first.getFirst() == it->first.getFirst()
+				&& id->first.getLast() == it->first.getLast()) {
+				it = courseStudents.erase(it);
+			}
+
+	else {
+				++it;
+			}
+		}
+	
+	
+	}
+	cout << "----drops removed-----" << endl;
+	printRoster(courseStudents);
+
+}

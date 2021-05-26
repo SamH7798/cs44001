@@ -1,0 +1,269 @@
+//Sam Hill's State Pattern Process model
+#include <iostream>
+#include <string>
+#include <vector>
+#include<deque>
+using std::cin; using std::cout; using std::endl; using std::string;
+using std::vector; using std::deque;
+class State;
+static int processID = 0;
+
+class Process {
+public:
+	Process();
+	//behaviors
+	void admitted();
+	void interrupt();
+	void ioWait();
+	void ioCompletion();
+	void schedularDispatch();
+	void exit();
+	void terminate();
+	string report();
+	//static int processID;
+	
+
+	void changState(State* s) { //changes state of process
+		state_ = s;
+	}
+	int returnID() { return processID; }
+
+	//clone used for prototype
+	Process* clone() { return new Process(); }
+
+
+private:
+	
+	State* state_;
+
+};
+
+
+
+
+class State {
+
+public:
+	
+	virtual void admitted(Process*) {}
+	virtual void interrupt(Process*) {}
+	virtual void ioWait(Process*) {}
+	virtual void ioCompletion(Process*) {}
+	virtual void schedularDispatch(Process*) {}
+	virtual void exit(Process*) {}
+	virtual void terminate(Process*) {}
+	
+	virtual string report() = 0;
+	
+	void changeState(Process* p, State* s) {
+		p->changState(s);
+		
+	}
+	
+};
+
+class NewP : public State {
+public:
+	static State* instance() {
+		static State* onlyInstance = new NewP;
+		return onlyInstance;
+	}
+	string report() override {
+		return "is being made";
+	}
+	NewP() {}
+
+	void admitted(Process*) override;
+private:
+	NewP(const NewP&) {}
+	NewP& operator=(const NewP&) {}
+
+	
+
+};
+// New Behavior
+
+class Ready : public State {
+public:
+	static State* instance() {
+		static State* onlyInstance = new Ready;
+		return onlyInstance;
+	}
+
+	string report() override {
+		return "is Ready";
+	}
+
+	void schedularDispatch(Process*) override;
+
+
+};
+
+class Running : public State {
+public:
+
+	static State* instance() {
+		static State* onlyInstance = new Running;
+		return onlyInstance;
+	}
+	string report() override {
+		return "is Running";
+	}
+
+	void interrupt(Process* p) override;
+	void ioWait(Process* p) override;
+	void exit(Process* p) override;
+};
+
+class Waiting : public State {
+public:
+	static State* instance() {
+		static State* onlyInstance = new Waiting;
+		return onlyInstance;
+	}
+	string report() override {
+		return "is Waiting";
+	}
+	void ioCompletion(Process* p)override;
+
+};
+
+class Terminated :public State {
+public:
+	static State* instance() {
+		static State* onlyInstance = new Terminated;
+		return onlyInstance;
+	}
+	string report() override {
+		return "is Terminated";
+	}
+	void terminate(Process* p) override;
+
+};
+
+//----New State Functions-------------
+void NewP::admitted(Process* p) { 
+	
+	changeState(p, Ready::instance());
+}
+
+//---- Ready Functions------------
+void Ready::schedularDispatch(Process* p) {
+	changeState(p, Running::instance());
+}
+//----- Running Functions----------
+void Running::interrupt(Process *p) {
+	changeState(p, Ready::instance());
+}
+
+void Running::ioWait(Process *p) {
+	changeState(p, Waiting::instance());
+}
+
+void Running::exit(Process* p) {
+	changeState(p, Terminated::instance());
+}
+//------- Waiting Functions-----
+void Waiting::ioCompletion(Process* p) {
+	changeState(p, Ready::instance());
+}
+//------Terminated Fuctions---------
+void Terminated::terminate(Process* p) {
+	delete p;
+}
+
+Process::Process() {
+	++processID;
+	state_ = NewP::instance();
+}
+
+// behaviors of process class
+
+
+void Process::admitted() {   state_->admitted(this); };
+void Process::interrupt() { state_->interrupt(this); }
+void Process::ioWait() { state_->ioWait(this); }
+void Process::ioCompletion() { state_->ioCompletion(this); }
+void Process::schedularDispatch() { state_->schedularDispatch(this); }
+void Process::exit() { state_->exit(this); }
+void Process::terminate() { delete state_; }
+
+string Process::report() { return state_->report(); }
+
+
+int main() {
+	srand(time(NULL));
+	deque<Process*> readyQueue, waitingQueue;
+	int runningDec, waitingDec;
+
+	// Process prototype
+	Process prototypeProcess;
+
+	// filling the ready queue with 4 processes
+	for (int i = 0; i < 4; ++i) {
+		readyQueue.push_back(prototypeProcess.clone());
+	}
+	// making all processes ready
+	for (int i = 0; i < readyQueue.size(); ++i) {
+		cout << "Process " << readyQueue[i]->returnID() <<" " << readyQueue[i]->report() << endl;
+		readyQueue[i]->admitted();
+		cout << "Process " << readyQueue[i]->returnID() << " " << readyQueue[i]->report() << endl;
+	
+	}
+	while (!readyQueue.empty() || !waitingQueue.empty()) {
+		runningDec = (rand() % 3) + 1;
+		waitingDec = (rand() % 2) + 1;
+
+		if (readyQueue.size()!= 0) {
+			readyQueue.front()->schedularDispatch();
+			cout << "Process " << readyQueue.front()->report() << endl; // head of ready queue is set to running
+			//cout << "---This Is Running-------" << endl;
+
+			cout << "Ready Queue Size: " << readyQueue.size() << endl;
+			cout << "Waiting Queue Size: " << waitingQueue.size() << endl;
+		}
+		//runningDec = (rand() % 3) + 1;
+
+		if (runningDec == 1 && readyQueue.size() ) { // if 1 process is terminated
+			
+			readyQueue.front()->exit();
+			cout << "Process " << readyQueue.front()->report() << endl;
+			readyQueue.pop_front();
+			//delete readyQueue.front();
+
+			cout << "Ready Queue Size: " << readyQueue.size() << endl;
+			cout << "Waiting Queue Size: " << waitingQueue.size() << endl;
+		}
+		if (runningDec == 2 && readyQueue.size()) {  // if2 process is interrupted
+			readyQueue.front()->interrupt();
+			cout << "Process " << readyQueue.front()->report() << endl;
+			readyQueue.push_back(readyQueue.front());
+			readyQueue.pop_front();
+
+			cout<< "Ready Queue Size: "<< readyQueue.size() << endl;
+			cout << "Waiting Queue Size: " << waitingQueue.size() << endl;
+		}
+		if (runningDec == 3 && readyQueue.size() != 0) { // if 3 process goes to waiting
+			readyQueue.front()->ioWait();
+			cout << "Process " << readyQueue.front()->report() << endl;
+			waitingQueue.push_front(readyQueue.front());
+			readyQueue.pop_front();
+
+			cout << "Ready Queue Size: " << readyQueue.size() << endl;
+			cout<<"Waiting Queue Size: " << waitingQueue.size() << endl;
+		}
+		//waitingDec = (rand() % 2) + 1;
+		
+		if (waitingDec == 1 && waitingQueue.size() != 0) {
+			waitingQueue.back()->ioCompletion();
+		//	cout << "------------This Is Waitng" << endl;
+			cout << "Process " << waitingQueue.front()->report() << endl;
+			readyQueue.push_back(waitingQueue.back());
+			waitingQueue.pop_back();
+		
+		}
+
+		//break;
+	
+	
+	}

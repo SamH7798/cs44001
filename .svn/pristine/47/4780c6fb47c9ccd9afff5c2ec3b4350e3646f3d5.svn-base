@@ -1,0 +1,19 @@
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include "carFactory.hpp"
+
+using std::vector;
+using std::cout; using std::endl;
+
+int main() {
+   srand(time(nullptr));
+
+   const int numBuyers=10;
+   for(int i=0; i < numBuyers; ++i)
+      if(rand()% 2 == 0)
+	 toyotaLover(i);
+      else
+	 fordLover(i);
+  
+}

@@ -1,0 +1,223 @@
+#include <string>
+#include<iostream>
+#include<list>
+#include<set>
+#include <vector>
+using std::cout; using std::cin; using std::endl; using std::string;
+using std::list; using std::set; using std::vector;
+
+enum class DrinkType { small, medium, large };
+
+class Drink {
+public:
+    Drink(DrinkType type = DrinkType::small, int price = 0) :
+        type_(type), price_(price) {}
+    virtual double getPrice() const { return price_; };
+    virtual std::string getName() const { return size_ + " Coffee"; }
+    void addTop() { ++numTops; }
+    int Tops() { return numTops; }
+    void setDrinkName(const string s) { name_ = s; };
+    void setSize(char s) {
+        if (s == 's') { type_ = DrinkType::small; size_ = "small"; price_ = 1.00; }
+        if (s == 'm') { type_ = DrinkType::medium; size_ = "medium"; price_ = 2.00; }
+        if (s == 'l') { type_ = DrinkType::large; size_ = "large"; price_ = 3.00; }
+    }
+
+    void setPrice(const double p) { price_ = p; }
+    void setName(const string n) { name_ = n; }
+    string getOrderName() { return name_; }
+    string getSize() { return size_; }
+private:
+    double price_;
+    DrinkType type_;
+    string size_;
+    string name_;
+    int numTops = 0;
+};
+
+class Sprinkles : public Drink {
+public:
+    Sprinkles(Drink* d) : drink_(d) {}
+
+    double getPrice() const override { return  0.5; }
+    string getName() const override {  
+        if (0 < drink_->Tops() ) {
+            drink_->addTop();
+            return  ", sprinkles";
+        
+        }
+        else {
+            drink_->addTop();
+            return drink_->getName() + " with sprinkles";
+            
+        }
+       
+    }
+
+private:
+    Drink* drink_;
+
+};
+
+class Caramel : public Drink {
+public:
+
+    Caramel(Drink* d) : drink_(d){}
+
+    double getPrice() const override { return  0.20; }
+
+    string getName() const override {
+        if (0 < drink_->Tops()) {
+            drink_->addTop();
+            return  ", carmel";
+
+        }
+        else {
+            drink_->addTop();
+            return drink_->getName() + " with carmel";
+
+        }
+
+    }
+
+private:
+    Drink* drink_;
+
+};
+
+class Foam : public Drink {
+public:
+    Foam(Drink* d) : drink_(d) {}
+
+    double getPrice() const override { return  0.40; }
+
+    string getName() const override {
+        if (0 < drink_->Tops()) {
+            drink_->addTop();
+            return  ", foam ";
+
+        }
+        else {
+            drink_->addTop();
+            return drink_->getName() + " with foam" ;
+
+        }
+
+    }
+
+private:
+    Drink* drink_;
+
+};
+class Ice : public Drink {
+public:
+    Ice(Drink* d) : drink_(d) {}
+    double getPrice() const override { return  0.10; }
+
+    string getName() const override {
+        if (0 < drink_->Tops()) {
+            drink_->addTop();
+            return ", ice";
+
+        }
+        else {
+            drink_->addTop();
+            return drink_->getName() + " with ice";
+
+        }
+
+    }
+
+private:
+    Drink* drink_;
+
+};
+
+
+//observer class
+class Customer{
+public:
+    Customer();
+    Customer(class Barista* b);
+    virtual void notify() const = 0;
+    virtual Drink* getCDrink() const = 0;
+
+};
+
+// subject class
+class Barista {
+public:
+    void registerCustomer(Customer* c) {
+        customers_.insert(c);
+    
+    }
+    void deregisterCustomer(Customer* c) {
+        customers_.erase(c);
+    }
+
+    void notifyCustomers() const {
+        for (auto c : customers_) {
+            
+            
+                
+                c->notify();
+            
+         }   
+    }
+private:
+    set<Customer*> customers_;
+
+};
+
+Customer::Customer(Barista* b) {
+    b->registerCustomer(this);
+};
+
+
+class ConcreteBarista;
+
+// concrete observer
+class ConcreteCustomer: public Customer{
+public:
+    ConcreteCustomer(const string&, ConcreteBarista* b, Drink* d);
+    void notify() const override;
+    string orderName() {
+        return order_ ->getName(); 
+    }
+    ConcreteCustomer() : name_(""), order_(nullptr), b_(nullptr){}
+    Drink* getCDrink() const override { return order_; }
+    string getName() { return name_; }
+    void setDrink(Drink* d) {  order_ = d; }
+private:
+    string name_;
+    Drink* order_;
+   // string order_;
+    ConcreteBarista* b_;
+};
+
+// concrete subject
+class ConcreteBarista : public Barista {
+public:
+    ConcreteBarista(const string& name) { name_ = name; }
+    void drinkMade(const string& drink) {
+        drinkMade_ = drink; notifyCustomers();
+    }
+    string getDrink() { return drinkMade_; }
+    string addDrink(const string drink) { order_.push_back(drink); }
+private:
+    string name_;
+    string drinkMade_;
+    vector<string> order_;
+
+};
+ConcreteCustomer::ConcreteCustomer(const string& name, ConcreteBarista* b, Drink* d): 
+    name_(name),b_(b), order_(d), Customer(static_cast<Barista*>(b)) {
+
+}
+void ConcreteCustomer::notify() const {
+    
+    if (order_ != nullptr) {
+        //cout << "Not Null!" << endl;
+        if (b_->getDrink() == order_->getOrderName()) { cout << name_ << ", your order Of a " <<order_->getOrderName()<<" is ready that will be "<< order_->getPrice() <<" Dollars" << endl; }
+    }
+ }

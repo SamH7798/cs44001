@@ -1,0 +1,137 @@
+// vector and list algorithms
+// Mikhail Nesterenko
+// 3/11/2014
+
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <list>
+#include <string>
+#include <cstdlib>
+
+using std::ifstream;
+using std::string; using std::getline;
+using std::list; using std::vector;
+using std::cout; using std::endl;
+using std::move;
+
+// reading a list from a fileName
+void readRoster(vector<list<string>>& roster, string fileName);
+
+// printing a list out
+void printRoster(const vector<list<string>>& roster);
+
+int main(int argc, char* argv[]) {
+
+	if (argc <= 1) {
+		cout << "usage: " << argv[0]
+			<< " list of courses, dropouts last"
+			<< endl; exit(1);
+	}
+	
+	// vector of courses of students
+	vector <list<string>> courseStudents;
+	
+	for (int i = 1; i < argc - 1; ++i) {
+		vector<list<string>> roster;
+		readRoster(courseStudents, argv[i]);
+
+
+		
+	}
+	printRoster(courseStudents);
+	cout << endl << endl;
+
+	
+
+	
+	vector <list<string>> dropouts;
+	
+	cout << "---------Dropouts-----------" << endl;
+
+	printRoster(dropouts);
+	
+
+	readRoster(dropouts, argv[argc - 1]);
+
+	printRoster(dropouts);
+	
+	int index = courseStudents.size() - 1;
+	for (auto it = courseStudents.end() - 1; it >= courseStudents.begin();  --it, --index) {
+		
+		for (auto id = dropouts.begin(); id != dropouts.end(); ++id) {
+			
+			if (it->front() == id->front() ) {
+				
+				//courseStudents.erase(courseStudents.begin() + index);
+				courseStudents.erase(courseStudents.begin() + index);
+				
+
+				
+			}
+		}	
+		
+		
+	}
+     
+	cout << endl;
+	cout << "-------Drops Removed-------"<< endl;
+	printRoster(courseStudents);
+	
+	
+
+}
+
+// reading in a file of names into a list of strings
+void readRoster(vector<list<string>>& roster, string fileName) {
+	
+	ifstream course(fileName);
+	string first, last, coursefile;
+	coursefile = fileName;
+	int pos = coursefile.find_first_of('.');
+	string coursename = coursefile.erase(pos);
+
+	
+
+	while (course >> first >> last) {
+
+		
+		bool found = false;
+		//std::cout << first << "|" << last << endl;
+
+			for (auto it = roster.begin(); it != roster.end(); ++it) {
+				
+				//cout << last << " == " << *(++(it->begin())) << std::endl;
+
+				if (first + ' ' + last == it->front()) {
+					
+					found = true;
+					it ->push_back(coursename);
+					break;
+				}
+				
+				
+			}
+			if (!found) {
+				//std::cout << "ADDING NEW: " << first << "|" << last << endl;
+				list<string> students;
+				students.push_back(first + ' ' + last);
+				//students.push_back(last);
+				students.push_back(coursename);
+				roster.push_back(students);
+			}
+	}
+	course.close();
+}
+
+// printing a list out
+void printRoster(const vector<list<string>>& roster) {
+	for (auto it = roster.begin(); it != roster.end(); ++it) {
+		
+		for ( auto str : *it) {
+			cout << str << ' ';
+		}
+		cout << endl;
+	}			
+	
+}
